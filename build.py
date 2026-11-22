@@ -33,5 +33,14 @@ b += T(400, cy + 12, 'SWE intern @ Palantir  ·  engineer learning to design', 1
 b += T(400, cy + 44, 'currently reading Creative Selection by Ken Kocienda', 12.5, dim, False, 'middle', .3)
 b += T(132, sy + 6, 'Project spotlight', 20, fg, True) + T(132, sy + 32, 'biped physics engine', 13, dim, False, ls=.3)
 pathlib.Path('assets/header.svg').write_text(svg(H, b, ALT))
-f = stripes(120, [(140, 60, 22, 100)], wave=.4) + T(140, 65, 'LinkedIn ↗', 14, fg, True, 'middle')
-pathlib.Path('assets/footer.svg').write_text(svg(120, f, 'Connect on LinkedIn'))
+# The footer is one stripe field cut into three images, one per link, so each image can carry its own link.
+LINKS = [('site', 'joshkim.me ↗', 'Visit joshkim.me'), ('x', 'X ↗', 'Follow on X'), ('linkedin', 'LinkedIn ↗', 'Connect on LinkedIn')]
+FH, cuts = 120, [0, 267, 534, W]
+centres = [(cuts[i] + cuts[i + 1]) / 2 for i in range(3)]
+field = stripes(FH, [(c, 60, 22, 92) for c in centres], wave=.4)
+for i, (name, label, alt) in enumerate(LINKS):
+    x0, w = cuts[i], cuts[i + 1] - cuts[i]
+    body = field + T(centres[i], 65, label, 14, fg, True, 'middle')
+    pathlib.Path(f'assets/footer-{name}.svg').write_text(
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{FH}" viewBox="{x0} 0 {w} {FH}" role="img" aria-label="{e(alt)}">'
+        f'<style>text{{font-family:{FAM}}}</style><rect x="{x0}" width="{w}" height="{FH}" fill="{bg}"/>{body}</svg>')
